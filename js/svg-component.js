@@ -2,6 +2,11 @@ import d3 from 'd3';
 import React from 'react';
 import { parseMarginArray } from './utilities.js';
 
+/**
+ * This is a component for doing non-faux dom d3 interactives with
+ * react. It's basically a harness for applying d3 to a space.
+ */
+
 // TODO: a standard way to swap between the parent element being
 // <svg> and <g>
 export default class SVGComponent extends React.Component {
