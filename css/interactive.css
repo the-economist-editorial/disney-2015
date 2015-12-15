@@ -7,6 +7,9 @@
 .tick line {
   stroke: black;
 }
+.rules .tick line {
+  stroke: white;
+}
 .domain {
   stroke: black;
 }
