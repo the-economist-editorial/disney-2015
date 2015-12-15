@@ -17,13 +17,15 @@ const TYPE = 'Type';
 function typeColour(d) {
   switch(d[TYPE]) {
     case 'A':
-      return colours.blue[0];
-    case 'L':
       return colours.red[0];
+    case 'L':
+      return colours.blue[1];
     case 'H':
       return colours.green[0];
-    default:
+    case 'C':
       return colours.yellow[0];
+    default:
+      return colours.grey[4];
   };
 }
 
@@ -125,8 +127,8 @@ export default class Scatter extends SVGComponent {
     // time for the voronoi covering
     var voronoiLayer = this.selectRef('voronoi');
     var voronoi = d3.geom.voronoi()
-      .x(d => xScale(d[DATE]))
-      .y(d => yScale(d[BOX_OFFICE]))
+      .x(d => { d._x = xScale(d[DATE]); return d._x; })
+      .y(d => { d._y = yScale(d[BOX_OFFICE]); return d._y; })
       .clipExtent([[x1,y1],[x2,y2]]);
 
     var voronoiJoin = voronoiLayer.selectAll('.voronoi')
@@ -138,7 +140,10 @@ export default class Scatter extends SVGComponent {
     voronoiJoin.exit().remove();
     voronoiJoin.attr({
       d : d => d ? `M${d.join('L')}Z` : null
-    });
+    })
+      .on('mouseenter', this.props.activateTooltip)
+      .on('touchstart', this.props.activateTooltip)
+      .on('mouseleave', this.props.hideTooltip);
 
     this.firstRun = !!data.length;
   }

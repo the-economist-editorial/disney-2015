@@ -12,13 +12,14 @@ import Footer from './footer.js';
 import ChartContainer from './chart-container.js';
 import ToggleBarRaw from './toggle-bar.js';
 import ScatterRaw from './disney_scatter.js';
+import TooltipRaw from './tooltip.js';
 
 import chroma from 'chroma-js';
 
 import { createStore } from 'redux';
 import { connect, Provider } from 'react-redux';
 
-import { updateData, updateFilter } from './actions.js';
+import { updateData, updateFilter, showTooltip, hideTooltip } from './actions.js';
 import updateState from './reducers.js'
 
 var store = createStore(updateState);
@@ -30,6 +31,17 @@ var Scatter = connectMap({
 var ToggleBar = connectMap({
   value : 'filter'
 })(ToggleBarRaw);
+var Tooltip = connect(function(state) {
+  return {
+    show : state.tooltipShow,
+    mouseX : state.tooltipContents && state.tooltipContents.point._x,
+    mouseY : state.tooltipContents && state.tooltipContents.point._y,
+    contents : state.tooltipContents
+  };
+})(TooltipRaw);
+
+var dateFormatter = d3.time.format('%b %Y');
+var boxOfficeFormatter = d3.format('$,');
 
 class Chart extends ChartContainer {
   render() {
@@ -49,13 +61,35 @@ class Chart extends ChartContainer {
       notes : (
         <div className="note">*Films taking above $10m</div>
       )
-    }
+    };
+
+    var scatterProps = {
+      activateTooltip : d => {
+        store.dispatch(showTooltip(d))
+      },
+      hideTooltip : d => store.dispatch(hideTooltip())
+    };
+
+    var tooltipProps = {
+      template : function(d) {
+        if(!d.contents) { return ''; }
+        var data = d.contents.point;
+        return (<div>
+          <h4>{data.Film}</h4>
+          <div>Released: {dateFormatter(data.date)}</div>
+          <div>Revenue: {boxOfficeFormatter(data.today)}</div>
+        </div>);
+      }
+    };
 
     return(
       <div className='chart-container'>
         <Header title="Eight decades of Disney" subtitle="US box-office revenues*" subsub="2015 prices, $bn"/>
         <ToggleBar {...toggleProps} />
-        <Scatter />
+        <div className="tooltip-bounder">
+          <Scatter {...scatterProps} />
+          <Tooltip {...tooltipProps} />
+        </div>
         <Footer {...footerProps} />
       </div>
     );
@@ -70,10 +104,8 @@ var chart = React.render(
     {() => <Chart {...props} />}
   </Provider>, document.getElementById('interactive'));
 
-
-var dateFormat = d3.time.format('%d/%m/%Y');
-
 d3.csv('./data/disney.csv', function(error, data) {
+  var dateFormat = d3.time.format('%d/%m/%Y');
   data = data.map(parseNumerics);
   data = data.map(d => {
     return Im.extend(d, {

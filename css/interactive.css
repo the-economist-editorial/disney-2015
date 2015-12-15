@@ -27,3 +27,12 @@
 .voronoi {
   opacity: 0;
 }
+
+.tooltip-bounder {
+  position: relative;
+}
+.tooltip {
+  padding: 2px 5px;
+  pointer-events: none;
+  font-size: 14px;
+}
