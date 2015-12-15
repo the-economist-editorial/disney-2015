@@ -8,6 +8,15 @@
   flex-basis: auto;  /* non-uniform tab widths */
 }
 
+/*oh this is so lazy...*/
+.tab-bar .tab {
+  &:nth-child(2) { color : var(--red-1); }
+  &:nth-child(3) { color : var(--blue-2); }
+  &:nth-child(4) { color : var(--green-1); }
+  &:nth-child(5) { color : var(--yellow-1); }
+}
+
+
 .tick line {
   stroke: black;
 }
