@@ -1,3 +1,17 @@
 /* project-specific CSS belongs here */
 
-/* intentionally empty */
+.backdrop {
+  fill : var(--grey-10)
+}
+
+.tick line {
+  stroke: black;
+}
+.domain {
+  stroke: black;
+}
+
+
+.voronoi {
+  opacity: 0;
+}

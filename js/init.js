@@ -9,7 +9,7 @@ import colours from './econ_colours.js';
 
 import Header from './header.js';
 import ChartContainer from './chart-container.js';
-import ScatterRaw from './scatter.js';
+import ScatterRaw from './disney_scatter.js';
 
 import chroma from 'chroma-js';
 
@@ -45,7 +45,15 @@ var chart = React.render(
   </Provider>, document.getElementById('interactive'));
 
 
+var dateFormat = d3.time.format('%d/%m/%Y');
+
 d3.csv('./data/disney.csv', function(error, data) {
   data = data.map(parseNumerics);
+  data = data.map(d => {
+    return Im.extend(d, {
+      date : dateFormat.parse(d.Date)
+    });
+  }).sort((a,b) => { return a.date - b.date; })
+  .filter(d => d.today > 0);
   store.dispatch(updateData(data));
 });
