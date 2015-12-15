@@ -37,7 +37,7 @@ export default class Scatter extends SVGComponent {
   static get defaultProps() {
     return {
       data : [],
-      xRange : [20, 500],
+      xRange : [20, 560],
       yRange : [350, 20]
     };
   }
@@ -79,6 +79,7 @@ export default class Scatter extends SVGComponent {
     var yAxis = d3.svg.axis()
       .outerTickSize(0)
       .orient('right')
+      .tickFormat(d => d/1e6)
       .scale(yScale);
     var yAxisLayer = this.selectRef('y-axis')
       .attr({
