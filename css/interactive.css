@@ -4,14 +4,23 @@
   fill : var(--grey-10)
 }
 
+.chart-container .tab-bar .tab {
+  flex-basis: auto;  /* non-uniform tab widths */
+}
+
 .tick line {
   stroke: black;
 }
-.rules .tick line {
-  stroke: white;
-}
 .domain {
   stroke: black;
+}
+.rules {
+  .tick line {
+    stroke: white;
+  }
+  .domain {
+    display : none;
+  }
 }
 
 

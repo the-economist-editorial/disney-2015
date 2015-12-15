@@ -1,16 +1,17 @@
-import { UPDATE_DATA } from './actions.js';
+import { generateReducer } from './utilities.js';
+import { UPDATE_DATA, UPDATE_FILTER } from './actions.js';
 
 var initialState = {
-  data : []
+  data : [],
+  filter : 'all'
 };
 
-function dataReducer(state = [], action) {
-  if(action.type !== UPDATE_DATA) { return state; }
-  return action.data;
-}
+var dataReducer = generateReducer(initialState.data, UPDATE_DATA);
+var filterReducer = generateReducer(initialState.filter, UPDATE_FILTER);
 
 export default function updateState(state = initialState, action) {
   return {
-    data : dataReducer(state.data, action)
+    data : dataReducer(state.data, action),
+    filter : filterReducer(state.filter, action)
   };
 }

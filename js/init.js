@@ -9,6 +9,7 @@ import colours from './econ_colours.js';
 
 import Header from './header.js';
 import ChartContainer from './chart-container.js';
+import ToggleBarRaw from './toggle-bar.js';
 import ScatterRaw from './disney_scatter.js';
 
 import chroma from 'chroma-js';
@@ -16,20 +17,36 @@ import chroma from 'chroma-js';
 import { createStore } from 'redux';
 import { connect, Provider } from 'react-redux';
 
-import { updateData } from './actions.js';
+import { updateData, updateFilter } from './actions.js';
 import updateState from './reducers.js'
 
 var store = createStore(updateState);
 
 var Scatter = connectMap({
-  data : 'data'
+  data : 'data',
+  filter : 'filter'
 })(ScatterRaw);
+var ToggleBar = connectMap({
+  value : 'filter'
+})(ToggleBarRaw);
 
 class Chart extends ChartContainer {
   render() {
+    var toggleProps = {
+      items : [
+        { title : 'All', key : 'all', value : 'all' },
+        { title : 'Traditional animation', key : 'A', value : 'A' },
+        { title : 'Live action', key : 'L', value : 'L' },
+        { title : 'Hybrid', key : 'H', value : 'H' },
+        { title : 'Computer animation', key : 'C', value : 'C' },
+      ],
+      action : v => { store.dispatch(updateFilter(v)); }
+    };
+
     return(
       <div className='chart-container'>
         <Header title="Disney" subtitle="Movies!"/>
+        <ToggleBar {...toggleProps} />
         <Scatter />
       </div>
     );

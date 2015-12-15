@@ -214,6 +214,24 @@ export function addDOMProperty(propertyKey, propertyName) {
 }
 
 
+/**
+ * a function for generating generic reducers
+ * it assumes the value for the property always comes in as 'data'
+ *
+ * @param  {any} defaultState - the initial state of the property
+ * @param  {string} actionName] - the name of the action to filter for
+ *
+ * @return {function} - the reducer
+ */
+export function generateReducer(defaultState, actionName) {
+  return function(state = defaultState, action) {
+    if(action.type !== actionName) { return state; }
+    return action.data;
+  };
+}
+
+
+
 // these are some weird side utilities for working with immutable-ish
 // objects
 

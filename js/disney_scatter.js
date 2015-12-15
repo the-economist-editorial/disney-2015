@@ -28,11 +28,15 @@ function typeColour(d) {
 }
 
 export default class Scatter extends SVGComponent {
+  // constructor(...args) {
+  //   super(...args);
+  //   this.firstRun = false;
+  // }
   static get defaultProps() {
     return {
       data : [],
       xRange : [20, 500],
-      yRange : [350, 10]
+      yRange : [350, 20]
     };
   }
   render() {
@@ -41,16 +45,22 @@ export default class Scatter extends SVGComponent {
 
     return (<svg height="400" width="595">
       <polygon className='backdrop' points={`${x1},${y1} ${x1},${y2} ${x2},${y2} ${x2},${y1}`} />
-      <g ref="x-axis"></g>
       <g ref="y-rules" className="rules"></g>
-      <g ref="y-axis"></g>
       <g ref="scatter"></g>
+      <g ref="x-axis"></g>
+      <g ref="y-axis"></g>
       <g ref="voronoi"></g>
     </svg>);
   }
   d3render() {
     var [x1, x2] = this.props.xRange;
     var [y2, y1] = this.props.yRange;
+
+    var data = this.props.data;
+    var filter = this.props.filter;
+    // if(this.props.filter !== 'all') {
+    //   data = data.filter(d => d[TYPE] === this.props.filter);
+    // }
 
     var xScale = d3.time.scale().range(this.props.xRange).domain(['01/01/1937', '31/12/2015'].map(dateFormat.parse));
     var yScale = d3.scale.linear().range(this.props.yRange).domain([0,7e8]);
@@ -89,7 +99,7 @@ export default class Scatter extends SVGComponent {
 
     var scatterLayer = this.selectRef('scatter');
 
-    var scatterJoin = scatterLayer.selectAll('.point').data(this.props.data);
+    var scatterJoin = scatterLayer.selectAll('.point').data(data);
     scatterJoin.enter()
       .append('svg:circle')
       .classed('point', true)
@@ -102,13 +112,15 @@ export default class Scatter extends SVGComponent {
         opacity : 0
       });
     scatterJoin.exit().remove();
-    scatterJoin.transition().duration(350).delay(d => (xScale(d[DATE]) - x1) * 8).ease('cubic-out').attr({
+    var scatterDelay = !!this.firstRun ? 2 : 8;
+    console.log(this.firstRun, scatterDelay);
+    scatterJoin.transition().duration(350).delay(d => (xScale(d[DATE]) - x1) * scatterDelay).ease('cubic-out').attr({
       r : 3,
       cx : d => xScale(d[DATE]),
       cy : d => yScale(d[BOX_OFFICE]),
       stroke : typeColour,
       fill : typeColour,
-      opacity : 1
+      opacity : d => filter === 'all' ? 1 : +(d[TYPE] === filter)
     });
 
     // time for the voronoi covering
@@ -119,7 +131,7 @@ export default class Scatter extends SVGComponent {
       .clipExtent([[x1,y1],[x2,y2]]);
 
     var voronoiJoin = voronoiLayer.selectAll('.voronoi')
-      .data(voronoi(this.props.data));
+      .data(voronoi(data));
 
     // voronoiJoin.enter()
     //   .append('svg:path')
@@ -128,5 +140,7 @@ export default class Scatter extends SVGComponent {
     // voronoiJoin.attr({
     //   d : d => d ? `M${d.join('L')}Z` : null
     // });
+
+    this.firstRun = !!data.length;
   }
 }
