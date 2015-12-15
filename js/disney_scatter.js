@@ -108,12 +108,11 @@ export default class Scatter extends SVGComponent {
         cy : yScale.range()[0],
         fill : 'white',
         'stroke-width' : 1,
-        'fill-opacity' : 0.6,
+        'fill-opacity' : 0.4,
         opacity : 0
       });
     scatterJoin.exit().remove();
-    var scatterDelay = !!this.firstRun ? 2 : 8;
-    console.log(this.firstRun, scatterDelay);
+    var scatterDelay = !!this.firstRun ? 2 : 6;
     scatterJoin.transition().duration(350).delay(d => (xScale(d[DATE]) - x1) * scatterDelay).ease('cubic-out').attr({
       r : 3,
       cx : d => xScale(d[DATE]),
@@ -133,13 +132,13 @@ export default class Scatter extends SVGComponent {
     var voronoiJoin = voronoiLayer.selectAll('.voronoi')
       .data(voronoi(data));
 
-    // voronoiJoin.enter()
-    //   .append('svg:path')
-    //   .classed('voronoi', true);
-    // voronoiJoin.exit().remove();
-    // voronoiJoin.attr({
-    //   d : d => d ? `M${d.join('L')}Z` : null
-    // });
+    voronoiJoin.enter()
+      .append('svg:path')
+      .classed('voronoi', true);
+    voronoiJoin.exit().remove();
+    voronoiJoin.attr({
+      d : d => d ? `M${d.join('L')}Z` : null
+    });
 
     this.firstRun = !!data.length;
   }

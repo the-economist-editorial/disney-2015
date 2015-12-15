@@ -8,6 +8,7 @@ import { Im, parseNumerics, connectMap }
 import colours from './econ_colours.js';
 
 import Header from './header.js';
+import Footer from './footer.js';
 import ChartContainer from './chart-container.js';
 import ToggleBarRaw from './toggle-bar.js';
 import ScatterRaw from './disney_scatter.js';
@@ -43,11 +44,19 @@ class Chart extends ChartContainer {
       action : v => { store.dispatch(updateFilter(v)); }
     };
 
+    var footerProps = {
+      sources : ['Box Office Mojo', 'IMDB'],
+      notes : (
+        <div className="note">*Films taking above $10m</div>
+      )
+    }
+
     return(
       <div className='chart-container'>
-        <Header title="Disney" subtitle="Movies!"/>
+        <Header title="Eight decades of Disney" subtitle="US box-office revenues*" subsub="2015 prices, $bn"/>
         <ToggleBar {...toggleProps} />
         <Scatter />
+        <Footer {...footerProps} />
       </div>
     );
   }
@@ -71,6 +80,6 @@ d3.csv('./data/disney.csv', function(error, data) {
       date : dateFormat.parse(d.Date)
     });
   }).sort((a,b) => { return a.date - b.date; })
-  .filter(d => d.today > 0);
+  .filter(d => d.today > 1e7);
   store.dispatch(updateData(data));
 });
