@@ -131,8 +131,10 @@ export default class Scatter extends SVGComponent {
       .y(d => { d._y = yScale(d[BOX_OFFICE]); return d._y; })
       .clipExtent([[x1,y1],[x2,y2]]);
 
+    var voronoiData = this.props.filter === 'all' ? data : data.filter(d => d[TYPE] === this.props.filter);
+
     var voronoiJoin = voronoiLayer.selectAll('.voronoi')
-      .data(voronoi(data));
+      .data(voronoi(voronoiData));
 
     voronoiJoin.enter()
       .append('svg:path')
